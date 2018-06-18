@@ -48,6 +48,9 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import java.util.Collections;
 import java.util.List;
 
+import rja.justwatchfortv.data.Movie;
+import rja.justwatchfortv.data.MovieList;
+
 /*
  * LeanbackDetailsFragment extends DetailsFragment, a Wrapper fragment for leanback details screens.
  * It shows a detailed view of video and its meta plus related videos.

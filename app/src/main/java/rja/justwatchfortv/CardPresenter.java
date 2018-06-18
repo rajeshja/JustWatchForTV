@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 
+import rja.justwatchfortv.data.Movie;
+
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
  * It contains an Image CardView
@@ -48,10 +50,8 @@ public class CardPresenter extends Presenter {
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
         Log.d(TAG, "onCreateViewHolder");
 
-        sDefaultBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.default_background);
-        sSelectedBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.selected_background);
+        sDefaultBackgroundColor = ContextCompat.getColor(parent.getContext(), R.color.default_background);
+        sSelectedBackgroundColor = ContextCompat.getColor(parent.getContext(), R.color.selected_background);
         /*
          * This template uses a default image in res/drawable, but the general case for Android TV
          * will require your resources in xhdpi. For more information, see

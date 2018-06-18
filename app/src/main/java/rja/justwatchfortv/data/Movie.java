@@ -12,7 +12,7 @@
  * the License.
  */
 
-package rja.justwatchfortv;
+package rja.justwatchfortv.data;
 
 import java.io.Serializable;
 

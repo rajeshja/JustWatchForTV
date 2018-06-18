@@ -12,7 +12,7 @@
  * the License.
  */
 
-package rja.justwatchfortv;
+package rja.justwatchfortv.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +20,7 @@ import java.util.List;
 public final class MovieList {
     public static final String MOVIE_CATEGORY[] = {
             "New",
-            "Popular",
-            "Category Two",
-            "Category Three",
-            "Category Four",
-            "Category Five"
+            "Popular"
     };
 
     private static List<Movie> list;

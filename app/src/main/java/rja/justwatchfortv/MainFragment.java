@@ -46,10 +46,15 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
+
+import rja.justwatchfortv.data.Content;
+import rja.justwatchfortv.data.Movie;
+import rja.justwatchfortv.data.MovieList;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
@@ -57,7 +62,7 @@ public class MainFragment extends BrowseFragment {
     private static final int BACKGROUND_UPDATE_DELAY = 300;
     private static final int GRID_ITEM_WIDTH = 200;
     private static final int GRID_ITEM_HEIGHT = 200;
-    private static final int NUM_ROWS = 6;
+    private static final int NUM_ROWS = 2;
     private static final int NUM_COLS = 15;
 
     private final Handler mHandler = new Handler();
@@ -91,19 +96,28 @@ public class MainFragment extends BrowseFragment {
     }
 
     private void loadRows() {
-        List<Movie> list = MovieList.setupMovies();
 
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        CardPresenter cardPresenter = new CardPresenter();
+        //CardPresenter cardPresenter = new CardPresenter();
+        ContentPresenter presenter = new ContentPresenter();
 
         int i;
         for (i = 0; i < NUM_ROWS; i++) {
-            if (i != 0) {
-                Collections.shuffle(list);
+
+            JustWatchAdapter adapter = new JustWatchAdapter();
+            List<Content> list;
+            try {
+                list = (List<Content>) adapter.execute(MovieList.MOVIE_CATEGORY[i]).get();
+            } catch (InterruptedException e) {
+                list = new ArrayList<Content>();
+                Log.d(TAG, "Call was interrupted", e);
+            } catch (ExecutionException e) {
+                list = new ArrayList<Content>();
+                Log.d(TAG, "There was an exception during execution", e);
             }
-            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-            for (int j = 0; j < NUM_COLS; j++) {
-                listRowAdapter.add(list.get(j % 5));
+            ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(presenter);
+            for (int j = 0; j < list.size(); j++) {
+                listRowAdapter.add(list.get(j));
             }
             HeaderItem header = new HeaderItem(i, MovieList.MOVIE_CATEGORY[i]);
             rowsAdapter.add(new ListRow(header, listRowAdapter));
