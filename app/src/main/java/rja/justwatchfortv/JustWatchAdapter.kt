@@ -14,6 +14,8 @@ class JustWatchAdapter() : AsyncTask<String, Void, List<Content>>() {
     companion object {
         const val POSTER_WIDTH = 166
         const val POSTER_HEIGHT = 243
+        const val JUSTWATCH_IMAGE_DOMAIN = "https://images.justwatch.com"
+
         val providers = hashMapOf(
                 3 to "Google Play",
                 192 to "YouTube",
@@ -95,10 +97,7 @@ class JustWatchAdapter() : AsyncTask<String, Void, List<Content>>() {
     private fun itemToContent(item: JsonObject, provider: JsonObject?): Content {
         val code = (item.get("full_path") as String).split("/").lastOrNull()
         val origPoster = item.get("poster") as String? ?: ""
-        val title = item.get("title") as String? ?:
-            (item.get("show_title") as String?) ?:
-            (item.get("original_title") as String?) ?:
-            "No title"
+        val title = createTitle(item)
         val posterPrefix = (origPoster).replace("{profile}", "")
          return Content(
                 id = item.get("id") as Int ?: 0,
@@ -109,6 +108,16 @@ class JustWatchAdapter() : AsyncTask<String, Void, List<Content>>() {
                 providerId = provider?.get("provider_id") as Int? ?: 0,
                 provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: ""
         )
+    }
+
+    private fun createTitle(item: JsonObject): String {
+        var title: String
+        if (item.get("object_type") == "show_season") {
+            title = "${item.get("show_title")} - ${item.get("title") ?: item.get("original_title")}"
+        } else {
+            title = item.get("title") as String? ?: "No Title"
+        }
+        return title
     }
 
     private fun queryAsJson(query: String): JsonObject {
