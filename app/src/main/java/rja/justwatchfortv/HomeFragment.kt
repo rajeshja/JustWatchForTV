@@ -139,6 +139,7 @@ class HomeFragment: BrowseFragment() {
 
     private fun setupEventListeners() {
         setOnSearchClickedListener {
+            //TODO
             Toast.makeText(context, "Search not implemented yet", Toast.LENGTH_LONG).show()
         }
 
