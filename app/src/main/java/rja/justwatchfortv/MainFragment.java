@@ -42,6 +42,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -98,7 +100,6 @@ public class MainFragment extends BrowseFragment {
     private void loadRows() {
 
         ArrayObjectAdapter rowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        //CardPresenter cardPresenter = new CardPresenter();
         ContentPresenter presenter = new ContentPresenter();
 
         int i;
@@ -109,10 +110,10 @@ public class MainFragment extends BrowseFragment {
             try {
                 list = (List<Content>) adapter.execute(MovieList.MOVIE_CATEGORY[i]).get();
             } catch (InterruptedException e) {
-                list = new ArrayList<Content>();
+                list = new ArrayList<>();
                 Log.d(TAG, "Call was interrupted", e);
             } catch (ExecutionException e) {
-                list = new ArrayList<Content>();
+                list = new ArrayList<>();
                 Log.d(TAG, "There was an exception during execution", e);
             }
             ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(presenter);
@@ -146,10 +147,8 @@ public class MainFragment extends BrowseFragment {
     }
 
     private void setupUIElements() {
-        // setBadgeDrawable(getActivity().getResources().getDrawable(
-        // R.drawable.videos_by_google_banner));
-        setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent
-        // over title
+        setBadgeDrawable(ContextCompat.getDrawable(getContext(), R.drawable.justwatch_icon));
+        setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedence over title
         setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
@@ -234,7 +233,10 @@ public class MainFragment extends BrowseFragment {
                 Object item,
                 RowPresenter.ViewHolder rowViewHolder,
                 Row row) {
-            if (item instanceof Movie) {
+            if (item instanceof Content) {
+                mBackgroundUri = JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN + ((Content) item).getPoster();
+                startBackgroundTimer();
+            } else if (item instanceof Movie) {
                 mBackgroundUri = ((Movie) item).getBackgroundImageUrl();
                 startBackgroundTimer();
             }
