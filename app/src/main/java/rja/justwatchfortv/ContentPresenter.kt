@@ -4,16 +4,17 @@ import android.graphics.drawable.Drawable
 import android.support.v17.leanback.widget.ImageCardView
 import android.support.v17.leanback.widget.Presenter
 import android.support.v4.content.ContextCompat
+import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import rja.justwatchfortv.data.Content
 
 class ContentPresenter() : Presenter() {
 
-    private val CARD_WIDTH = JustWatchAdapter.POSTER_WIDTH * 3 / 2
-    private val CARD_HEIGHT = JustWatchAdapter.POSTER_HEIGHT * 3 / 2
-
-    val JUSTWATCH_IMAGE_DOMAIN = "https://images.justwatch.com"
+    private val CARD_WIDTH = JustWatchAdapter.POSTER_WIDTH * 7 / 5
+    private val CARD_HEIGHT = JustWatchAdapter.POSTER_HEIGHT * 7 / 5
 
     private var defaultCardImage: Drawable? = null;
 
@@ -24,6 +25,27 @@ class ContentPresenter() : Presenter() {
         val card = ImageCardView(parent.context)
         card.isFocusable = true
         card.isFocusableInTouchMode = true
+
+        card.setOnFocusChangeListener { view: View, hasFocus: Boolean ->
+            //val infoField = view.findViewById<View>(R.id.info_field)
+            val contentField = view.findViewById<TextView>(R.id.content_text)
+            val titleField = view.findViewById<TextView>(R.id.title_text)
+            //val mainImage = view.findViewById<ImageView>(R.id.main_image).drawable
+
+            if (hasFocus) {
+                titleField.maxLines = 3
+                val infoLayout = RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+                titleField.layoutParams = infoLayout
+                val contentLayout = RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+                contentLayout.addRule(RelativeLayout.BELOW, R.id.title_text)
+                contentField.layoutParams = contentLayout
+            } else {
+                titleField.maxLines = 1
+            }
+
+        }
 
         return ViewHolder(card)
     }
@@ -40,7 +62,7 @@ class ContentPresenter() : Presenter() {
                     ?: 0)
         }
         Glide.with(viewHolder.view.context)
-                .load("${JUSTWATCH_IMAGE_DOMAIN}${content.poster}")
+                .load("${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${content.poster}")
                 .centerCrop()
                 .error(defaultCardImage)
                 .into(card.mainImageView)
