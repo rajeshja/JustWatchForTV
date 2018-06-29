@@ -1,5 +1,6 @@
 package rja.justwatchfortv
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -156,19 +157,19 @@ class HomeFragment: BrowseSupportFragment() {
             if (item is Content) {
                 val intent = Intent(activity, DetailsActivity::class.java)
                 intent.putExtra(DetailsActivity.CONTENT, item)
-//                val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                        activity,
-//                        (itemViewHolder.view as ImageCardView).mainImageView,
-//                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle()
-                activity?.startActivity(intent, null)
+                val bundle = ActivityOptions.makeSceneTransitionAnimation(
+                        activity,
+                        (itemViewHolder.view as ImageCardView).mainImageView,
+                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle()
+                activity?.startActivity(intent, bundle)
             } else if (item is Movie) {
                 val intent = Intent(activity, MovieDetailsActivity::class.java)
                 intent.putExtra(MovieDetailsActivity.MOVIE, item)
-//                val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                        activity,
-//                        (itemViewHolder.view as ImageCardView).mainImageView,
-//                        MovieDetailsActivity.SHARED_ELEMENT_NAME).toBundle()
-                activity?.startActivity(intent, null)
+                val bundle = ActivityOptions.makeSceneTransitionAnimation(
+                        activity,
+                        (itemViewHolder.view as ImageCardView).mainImageView,
+                        MovieDetailsActivity.SHARED_ELEMENT_NAME).toBundle()
+                activity?.startActivity(intent, bundle)
             }
         }
     }
