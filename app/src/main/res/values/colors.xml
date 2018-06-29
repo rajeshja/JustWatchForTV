@@ -4,5 +4,7 @@
     <color name="fastlane_background">#0f212c</color>
     <color name="search_opaque">#ffaa3f</color>
     <color name="selected_background">#ffaa3f</color>
+    <color name="movie_background">#ff443f</color>
+    <color name="tvshow_background">#80aa3f</color>
     <color name="default_background">#3d3d3d</color>
 </resources>

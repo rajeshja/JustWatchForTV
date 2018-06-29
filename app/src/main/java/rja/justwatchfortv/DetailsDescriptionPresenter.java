@@ -16,18 +16,19 @@ package rja.justwatchfortv;
 
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 
+import rja.justwatchfortv.data.Content;
 import rja.justwatchfortv.data.Movie;
 
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 
     @Override
     protected void onBindDescription(ViewHolder viewHolder, Object item) {
-        Movie movie = (Movie) item;
+        Content content= (Content) item;
 
-        if (movie != null) {
-            viewHolder.getTitle().setText(movie.getTitle());
-            viewHolder.getSubtitle().setText(movie.getStudio());
-            viewHolder.getBody().setText(movie.getDescription());
+        if (content != null) {
+            viewHolder.getTitle().setText(content.getTitle());
+            viewHolder.getSubtitle().setText(content.getType());
+            viewHolder.getBody().setText(content.getProvider());
         }
     }
 }

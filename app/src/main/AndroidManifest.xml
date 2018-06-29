@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="rja.justwatchfortv">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -36,6 +35,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".DetailsActivity" />
+        <activity android:name=".movie.MovieDetailsActivity" />
         <activity android:name=".PlaybackActivity" />
         <activity android:name=".BrowseErrorActivity" />
     </application>

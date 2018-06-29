@@ -9,14 +9,16 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import rja.justwatchfortv.data.BaseContent
 import rja.justwatchfortv.data.Content
+import rja.justwatchfortv.movie.Movie
 
 class ContentPresenter() : Presenter() {
 
     private val CARD_WIDTH = JustWatchAdapter.POSTER_WIDTH * 7 / 5
     private val CARD_HEIGHT = JustWatchAdapter.POSTER_HEIGHT * 7 / 5
 
-    private var defaultCardImage: Drawable? = null;
+    private var defaultCardImage: Drawable? = null
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
 
@@ -51,11 +53,17 @@ class ContentPresenter() : Presenter() {
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, item: Any) {
-        val content = item as Content
+        val content = item as BaseContent
         val card = viewHolder.view as ImageCardView
 
-        card.titleText = content.title
-        card.contentText = "${content.type}"
+        card.titleText = "${content.title} (${content.releaseYear})"
+        if (content is Content) {
+            card.contentText = content.type
+        } else if (content is Movie) {
+            card.contentText = "A movie"
+        } else {
+            card.contentText = "Got something that is neither movie nor content"
+        }
         card.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
         if (content.providerId != 0) {
             card.badgeImage = ContextCompat.getDrawable(card.context, JustWatchAdapter.providerIcons[content.providerId]

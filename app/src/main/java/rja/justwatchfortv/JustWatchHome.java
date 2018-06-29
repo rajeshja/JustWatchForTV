@@ -14,13 +14,13 @@
 
 package rja.justwatchfortv;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 
 /*
  * MainActivity class that loads {@link MainFragment}.
  */
-public class JustWatchHome extends Activity {
+public class JustWatchHome extends FragmentActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
