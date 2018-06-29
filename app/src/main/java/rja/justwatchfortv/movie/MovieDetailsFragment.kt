@@ -79,9 +79,6 @@ class MovieDetailsFragment: DetailsSupportFragment() {
                 for (offer in selectedMovieDetails.offers) {
                     actionAdapter.add(Action(offer.value.id.toLong(), offer.key, ""))
                 }
-                //actionAdapter.add(Action(1L, "Watch Trailer", "Free"))
-                //actionAdapter.add(Action(2L, "Rent", "Rs 100"))
-                //actionAdapter.add(Action(3L, "Buy", "Rs 450"))
 
                 row.actionsAdapter = actionAdapter
                 adapter.add(row)
@@ -117,6 +114,7 @@ class MovieDetailsFragment: DetailsSupportFragment() {
         //TODO
     }
 
+    //This code should be common for both Movie and TV Shows
     private fun initializeBackground(movie: MovieDetails) {
         if (movie.backdrops.isNotEmpty()) {
             detailsBackground.enableParallax()
