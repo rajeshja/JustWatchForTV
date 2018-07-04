@@ -21,4 +21,4 @@ open class BaseContent(open val id: Int,
                        open val posterLarge: String,
                        open val releaseYear: Int,
                        open val providerId: Int,
-                       open val provider: String) : Serializable {}
+                       open val provider: String) : Serializable

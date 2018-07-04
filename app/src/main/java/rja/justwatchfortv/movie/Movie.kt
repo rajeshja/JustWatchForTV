@@ -15,4 +15,4 @@ data class Movie (override val id: Int,
                   var description: String? = null,
                   var backdrops: Array<String> = emptyArray()) :
         BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider),
-        Serializable {}
+        Serializable

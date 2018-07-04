@@ -9,7 +9,7 @@ data class TVShow (val id: Int,
                    val releaseYear: Int,
                    val providerId: Int,
                    val provider: String,
-                   val offers: Map<String, OfferDetails>) : Serializable {}
+                   val offers: Map<String, OfferDetails>) : Serializable
 
 data class OfferDetails (val monetization: String,
                          val totalEpisodes: Int,

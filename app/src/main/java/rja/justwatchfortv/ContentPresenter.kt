@@ -14,7 +14,7 @@ import rja.justwatchfortv.data.BaseContent
 import rja.justwatchfortv.data.Content
 import rja.justwatchfortv.movie.Movie
 
-class ContentPresenter() : Presenter() {
+class ContentPresenter : Presenter() {
 
     private val CARD_WIDTH = JustWatchAdapter.POSTER_WIDTH * 7 / 5
     private val CARD_HEIGHT = JustWatchAdapter.POSTER_HEIGHT * 7 / 5
