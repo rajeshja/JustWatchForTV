@@ -11,6 +11,7 @@ import rja.justwatchfortv.movie.Movie
 import rja.justwatchfortv.movie.MovieDetails
 import rja.justwatchfortv.movie.StreamingDetails
 import java.net.URL
+import java.net.URLEncoder
 
 class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
 
@@ -18,6 +19,8 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
         const val POSTER_WIDTH = 166
         const val POSTER_HEIGHT = 243
         const val JUSTWATCH_IMAGE_DOMAIN = "https://images.justwatch.com"
+        const val SEARCH_RESULT_SIZE = 30
+        const val SEARCH_TYPEAHEAD_SIZE = 5
 
         val providers = hashMapOf(
                 3 to "Google Play",
@@ -31,7 +34,9 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
                 73 to "Tubi TV",
                 2 to "Apple iTunes",
                 119 to "Amazon Prime Video",
-                11 to "Mubi"
+                11 to "Mubi",
+                158 to "Viu",
+                0 to "Unknown Provider"
         )
         val providerIcons = hashMapOf(
                 3 to R.drawable.playmovies,
@@ -45,19 +50,19 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
                 73 to R.drawable.tubitv,
                 2 to R.drawable.itunes,
                 119 to R.drawable.primevideo,
-                11 to R.drawable.mubi
+                11 to R.drawable.mubi,
+                158 to R.drawable.viu
         )
 
         val MOVIE_CATEGORY = arrayOf(
                 "New",
                 "Popular")
 
+        const val newQueryFirstPage: String = "https://apis.justwatch.com/content/titles/en_IN/new?body={\"monetization_types\":[\"flatrate\",\"free\",\"ads\",\"rent\",\"buy\"],\"page\":1,\"page_size\":3,\"titles_per_provider\":6}"
+        const val popularQueryFirstPage: String = "https://apis.justwatch.com/content/titles/en_IN/popular?body={\"monetization_types\":[\"flatrate\",\"free\",\"ads\",\"buy\",\"rent\"],\"page\":1,\"page_size\":15}"
+        const val movieDetailsQuery: String = "https://apis.justwatch.com/content/titles/movie/%s/locale/en_IN"
+        const val searchContentQuery: String = "https://apis.justwatch.com/content/titles/en_IN/popular?body={\"content_types\":[\"show\",\"movie\"],\"page\":1,\"page_size\":%d,\"query\":\"%s\"}"
     }
-
-    val newQueryFirstPage: String = "https://apis.justwatch.com/content/titles/en_IN/new?body={\"monetization_types\":[\"flatrate\",\"free\",\"ads\",\"rent\",\"buy\"],\"page\":1,\"page_size\":3,\"titles_per_provider\":6}"
-    val popularQueryFirstPage: String = "https://apis.justwatch.com/content/titles/en_IN/popular?body={\"monetization_types\":[\"flatrate\",\"free\",\"ads\",\"buy\",\"rent\"],\"page\":1,\"page_size\":15}"
-
-    val movieDetailsQuery: String = "https://apis.justwatch.com/content/titles/movie/%s/locale/en_IN"
 
     override fun doInBackground(vararg category: String): List<BaseContent> {
         return listByCategory(category[0])
@@ -131,6 +136,74 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
         }
     }
 
+    private fun createTitle(item: JsonObject): String {
+        val title: String
+        if (item.get("object_type") == "show_season") {
+            title = "${item.get("show_title")} - ${item.get("title") ?: item.get("original_title")}"
+        } else {
+            title = item.get("title") as String? ?: "No Title"
+        }
+        return title
+    }
+
+    fun movieDetails(id: Int): MovieDetails {
+        val detail = queryAsJson(movieDetailsQuery.format(id))
+        return itemToDetails(detail)
+    }
+
+    private fun itemToDetails(detail: JsonObject): MovieDetails {
+        val movieCode = (detail["full_path"] as String).split("/").lastOrNull()
+        val backdrops = detail.array<JsonObject>("backdrops") ?: JsonArray()
+        val backdropURLs = mutableListOf<String>()
+        for (backdrop in backdrops) {
+            val url = backdrop.get("backdrop_url") as String?
+            if (url != null) {
+                val urlPrefix = url.replace("{profile}", "")
+                backdropURLs.add("${urlPrefix}s1440/${movieCode}")
+            }
+        }
+        val offers = mutableMapOf<String, StreamingDetails>()
+        val offerOptions = detail.array<JsonObject>("offers") ?: JsonArray()
+        for (offer in offerOptions) {
+            val providerId = offer.get("provider_id") as Int
+            val provider = providers[providerId] ?: ""
+            val urls = (offer.get("urls") as JsonObject? ?: JsonObject())
+            val url = urls.get("deeplink_android") as String? ?: urls.get("standard_web") as String
+            offers.put(provider, StreamingDetails(providerId, url))
+        }
+        return MovieDetails(id = detail.get("id") as Int,
+                title = detail.get("title") as String? ?: detail.get("original_title") as String? ?: "No Title",
+                description = detail.get("short_description") as String? ?: "No Description",
+                backdrops = backdropURLs.toTypedArray(),
+                offers = offers)
+    }
+
+    fun searchAhead(query: String): List<BaseContent> {
+        return search(query, SEARCH_TYPEAHEAD_SIZE)
+    }
+
+    fun search(query: String): List<BaseContent> {
+        return search(query, SEARCH_RESULT_SIZE)
+    }
+
+    private fun search(query: String, resultSize: Int): List<BaseContent> {
+        val contents = ArrayList<BaseContent>()
+        val result = queryAsJson(searchContentQuery.format(resultSize, URLEncoder.encode(query, "utf-8")))
+        val items = result.array<JsonObject>("items") ?: JsonArray()
+        for(item in items) {
+            contents.add(itemToContent(item, null))
+        }
+        return contents
+    }
+
+    private fun queryAsJson(query: String): JsonObject {
+        val result = URL(query).openStream().let {
+            Parser().parse(it) as JsonObject
+        }
+        return result
+    }
+
+    //Unused
     private fun itemToTVShow(item: JsonObject, provider: JsonObject?): TVShow {
         val code = (item["full_path"] as String).split("/").lastOrNull()
         val origPoster = item["poster"] as String? ?: ""
@@ -160,48 +233,6 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
         )
     }
 
-    private fun createTitle(item: JsonObject): String {
-        val title: String
-        if (item.get("object_type") == "show_season") {
-            title = "${item.get("show_title")} - ${item.get("title") ?: item.get("original_title")}"
-        } else {
-            title = item.get("title") as String? ?: "No Title"
-        }
-        return title
-    }
 
-    fun movieDetails(id: Int): MovieDetails {
-        val detail = queryAsJson(movieDetailsQuery.format(id))
-        val movieCode = (detail["full_path"] as String).split("/").lastOrNull()
-        val backdrops = detail.array<JsonObject>("backdrops") ?: JsonArray()
-        val backdropURLs = mutableListOf<String>()
-        for(backdrop in backdrops) {
-            val url = backdrop.get("backdrop_url") as String?
-            if (url!=null) {
-                val urlPrefix = url.replace("{profile}", "")
-                backdropURLs.add("${urlPrefix}s1440/${movieCode}")
-            }
-        }
-        val offers = mutableMapOf<String, StreamingDetails>()
-        val offerOptions = detail.array<JsonObject>("offers") ?: JsonArray()
-        for (offer in offerOptions) {
-            val providerId = offer.get("provider_id") as Int
-            val provider = providers[providerId] ?: ""
-            val urls = (offer.get("urls") as JsonObject? ?: JsonObject())
-            val url = urls.get("deeplink_android") as String? ?: urls.get("standard_web") as String
-            offers.put(provider, StreamingDetails(providerId, url))
-        }
-        return MovieDetails(id = id,
-                title = detail.get("title") as String? ?: detail.get("original_title") as String? ?: "No Title",
-                description = detail.get("short_description") as String? ?: "No Description",
-                backdrops = backdropURLs.toTypedArray(),
-                offers = offers)
-    }
 
-    private fun queryAsJson(query: String): JsonObject {
-        val result = URL(query).openStream().let {
-            Parser().parse(it) as JsonObject
-        }
-        return result
-    }
 }

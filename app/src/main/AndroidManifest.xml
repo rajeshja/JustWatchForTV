@@ -36,6 +36,7 @@
         </activity>
         <activity android:name=".DetailsActivity" />
         <activity android:name=".movie.MovieDetailsActivity" />
+        <activity android:name=".search.SearchActivity" />
         <activity android:name=".PlaybackActivity" />
         <activity android:name=".BrowseErrorActivity" />
     </application>

@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.support.v17.leanback.widget.ImageCardView
 import android.support.v17.leanback.widget.Presenter
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
@@ -65,9 +66,9 @@ class ContentPresenter() : Presenter() {
             card.contentText = "Got something that is neither movie nor content"
         }
         card.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
-        if (content.providerId != 0) {
-            card.badgeImage = ContextCompat.getDrawable(card.context, JustWatchAdapter.providerIcons[content.providerId]
-                    ?: 0)
+        if (JustWatchAdapter.providerIcons.containsKey(content.providerId)) {
+            Log.d("ContentPresenter", "content provider id = ${content.providerId}")
+            card.badgeImage = ContextCompat.getDrawable(card.context, JustWatchAdapter.providerIcons[content.providerId] ?: 0)
         }
         Glide.with(viewHolder.view.context)
                 .load("${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${content.poster}")

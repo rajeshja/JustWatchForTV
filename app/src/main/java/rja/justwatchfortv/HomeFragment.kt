@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v17.leanback.app.BackgroundManager
 import android.support.v17.leanback.app.BrowseSupportFragment
+import android.support.v17.leanback.app.SearchSupportFragment
 import android.support.v17.leanback.widget.*
 import android.support.v4.app.ActivityOptionsCompat
 import android.util.DisplayMetrics
@@ -25,6 +26,7 @@ import rja.justwatchfortv.data.Content
 import rja.justwatchfortv.data.MovieList
 import rja.justwatchfortv.movie.Movie
 import rja.justwatchfortv.movie.MovieDetailsActivity
+import rja.justwatchfortv.search.SearchActivity
 import java.util.*
 import java.util.concurrent.ExecutionException
 
@@ -91,7 +93,7 @@ class HomeFragment: BrowseSupportFragment() {
             val adapter = JustWatchAdapter()
             var list: List<BaseContent>
             try {
-                list = adapter.execute(MovieList.MOVIE_CATEGORY[i]).get() as List<BaseContent>
+                list = adapter.execute(JustWatchAdapter.MOVIE_CATEGORY[i]).get() as List<BaseContent>
             } catch (e: InterruptedException) {
                 list = ArrayList()
                 Log.d(TAG, "Call was interrupted", e)
@@ -104,7 +106,7 @@ class HomeFragment: BrowseSupportFragment() {
             for (j in list.indices) {
                 listRowAdapter.add(list[j])
             }
-            val header = HeaderItem(i.toLong(), MovieList.MOVIE_CATEGORY[i])
+            val header = HeaderItem(i.toLong(), JustWatchAdapter.MOVIE_CATEGORY[i])
             rowsAdapter.add(ListRow(header, listRowAdapter))
         }
 
@@ -143,36 +145,15 @@ class HomeFragment: BrowseSupportFragment() {
 
     private fun setupEventListeners() {
         setOnSearchClickedListener {
-            //TODO
-            Toast.makeText(context, "Search not implemented yet", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Search not fully implemented yet", Toast.LENGTH_SHORT).show()
+            val intent = Intent(activity, SearchActivity::class.java)
+            startActivity(intent)
         }
 
         onItemViewSelectedListener = ItemViewSelectedListener()
-        onItemViewClickedListener = ItemViewClickedListener()
+        onItemViewClickedListener = ContentItemViewClickedListener(activity)
     }
 
-    private inner class ItemViewClickedListener : OnItemViewClickedListener {
-        override fun onItemClicked(itemViewHolder: Presenter.ViewHolder, item: Any?,
-                                   rowViewHolder: RowPresenter.ViewHolder?, row: Row?) {
-            if (item is Content) {
-                val intent = Intent(activity, DetailsActivity::class.java)
-                intent.putExtra(DetailsActivity.CONTENT, item)
-                val bundle = ActivityOptions.makeSceneTransitionAnimation(
-                        activity,
-                        (itemViewHolder.view as ImageCardView).mainImageView,
-                        DetailsActivity.SHARED_ELEMENT_NAME).toBundle()
-                activity?.startActivity(intent, bundle)
-            } else if (item is Movie) {
-                val intent = Intent(activity, MovieDetailsActivity::class.java)
-                intent.putExtra(MovieDetailsActivity.MOVIE, item)
-                val bundle = ActivityOptions.makeSceneTransitionAnimation(
-                        activity,
-                        (itemViewHolder.view as ImageCardView).mainImageView,
-                        MovieDetailsActivity.SHARED_ELEMENT_NAME).toBundle()
-                activity?.startActivity(intent, bundle)
-            }
-        }
-    }
 
     private inner class ItemViewSelectedListener : OnItemViewSelectedListener {
         override fun onItemSelected(itemViewHolder: Presenter.ViewHolder?, item: Any?,

@@ -18,10 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class MovieList {
-    public static final String MOVIE_CATEGORY[] = {
-            "New",
-            "Popular"
-    };
 
     private static List<Movie> list;
     private static long count = 0;
