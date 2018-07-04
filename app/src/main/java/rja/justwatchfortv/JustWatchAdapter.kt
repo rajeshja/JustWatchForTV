@@ -1,15 +1,16 @@
 package rja.justwatchfortv
 
 import android.os.AsyncTask
-import com.beust.klaxon.Json
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
-import rja.justwatchfortv.data.BaseContent
-import rja.justwatchfortv.data.Content
+import rja.justwatchfortv.content.BaseContent
+import rja.justwatchfortv.content.BaseContentDetails
+import rja.justwatchfortv.content.Content
+import rja.justwatchfortv.content.StreamingDetails
 import rja.justwatchfortv.movie.Movie
 import rja.justwatchfortv.movie.MovieDetails
-import rja.justwatchfortv.movie.StreamingDetails
+import rja.justwatchfortv.tvshow.TVShowDetails
 import java.net.URL
 import java.net.URLEncoder
 
@@ -61,6 +62,7 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
         const val newQueryFirstPage: String = "https://apis.justwatch.com/content/titles/en_IN/new?body={\"monetization_types\":[\"flatrate\",\"free\",\"ads\",\"rent\",\"buy\"],\"page\":1,\"page_size\":3,\"titles_per_provider\":6}"
         const val popularQueryFirstPage: String = "https://apis.justwatch.com/content/titles/en_IN/popular?body={\"monetization_types\":[\"flatrate\",\"free\",\"ads\",\"buy\",\"rent\"],\"page\":1,\"page_size\":15}"
         const val movieDetailsQuery: String = "https://apis.justwatch.com/content/titles/movie/%s/locale/en_IN"
+        const val tvShowDetailsQuery: String = "https://apis.justwatch.com/content/titles/show/%s/locale/en_IN"
         const val searchContentQuery: String = "https://apis.justwatch.com/content/titles/en_IN/popular?body={\"content_types\":[\"show\",\"movie\"],\"page\":1,\"page_size\":%d,\"query\":\"%s\"}"
     }
 
@@ -68,24 +70,22 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
         return listByCategory(category[0])
     }
 
-    fun listByCategory(category: String): List<BaseContent> {
-        if (category == "New") {
-            return newContentList()
-        } else if (category == "Popular") {
-            return popularContentList()
-        } else {
-            return emptyList()
+    private fun listByCategory(category: String): List<BaseContent> {
+        return when (category) {
+            "New" -> newContentList()
+            "Popular" -> popularContentList()
+            else -> emptyList()
         }
     }
 
     fun newContentList(): List<BaseContent> {
         val contents = ArrayList<BaseContent>()
         val result = queryAsJson(newQueryFirstPage)
-        val days: JsonArray<JsonObject> = result.array<JsonObject>("days")?: JsonArray<JsonObject>()
+        val days = result.array<JsonObject>("days")?: JsonArray()
         for(day in days) {
-            val providers = day.array<JsonObject>("providers")?: JsonArray<JsonObject>()
+            val providers = day.array<JsonObject>("providers")?: JsonArray()
             for(provider in providers) {
-                val items = provider.array<JsonObject>("items")?: JsonArray<JsonObject>()
+                val items = provider.array<JsonObject>("items")?: JsonArray()
                 for(item in items) {
                     contents.add(itemToContent(item, provider))
                 }
@@ -97,7 +97,7 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
     fun popularContentList(): List<BaseContent> {
         val contents = ArrayList<BaseContent>()
         val result = queryAsJson(popularQueryFirstPage)
-        val items = result.array<JsonObject>("items") ?: JsonArray<JsonObject>()
+        val items = result.array<JsonObject>("items") ?: JsonArray()
         for(item in items) {
             contents.add(itemToContent(item, null))
         }
@@ -114,8 +114,8 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
                     id = item["id"] as Int,
                     title = title,
                     path = item["full_path"] as String? ?: "/no/path",
-                    poster = "${posterPrefix}s166/${code}",
-                    posterLarge = "${posterPrefix}s592/${code}",
+                    poster = "${posterPrefix}s166/$code",
+                    posterLarge = "${posterPrefix}s592/$code",
                     releaseYear = item["original_release_year"] as Int? ?: 0,
                     providerId = provider?.get("provider_id") as Int? ?: 0,
                     provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: "",
@@ -127,8 +127,8 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
                     title = title,
                     type = item["object_type"] as String? ?: "No Type",
                     path = item["full_path"] as String? ?: "/no/path",
-                    poster = "${posterPrefix}s166/${code}",
-                    posterLarge = "${posterPrefix}s592/${code}",
+                    poster = "${posterPrefix}s166/$code",
+                    posterLarge = "${posterPrefix}s592/$code",
                     releaseYear = item["original_release_year"] as Int? ?: 0,
                     providerId = provider?.get("provider_id") as Int? ?: 0,
                     provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: ""
@@ -137,43 +137,46 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
     }
 
     private fun createTitle(item: JsonObject): String {
-        val title: String
-        if (item.get("object_type") == "show_season") {
-            title = "${item.get("show_title")} - ${item.get("title") ?: item.get("original_title")}"
+        return if (item["object_type"] == "show_season") {
+            "${item["show_title"]} - ${item["title"] ?: item["original_title"]}"
         } else {
-            title = item.get("title") as String? ?: "No Title"
+            item["title"] as String? ?: "No Title"
         }
-        return title
+    }
+
+    fun tvShowDetails(id: Int): TVShowDetails {
+        val detail = queryAsJson(tvShowDetailsQuery.format(id))
+        return itemToContentDetails(detail) as TVShowDetails
     }
 
     fun movieDetails(id: Int): MovieDetails {
         val detail = queryAsJson(movieDetailsQuery.format(id))
-        return itemToDetails(detail)
+        return itemToContentDetails(detail) as MovieDetails
     }
 
-    private fun itemToDetails(detail: JsonObject): MovieDetails {
+    private fun itemToContentDetails(detail: JsonObject): BaseContentDetails {
         val movieCode = (detail["full_path"] as String).split("/").lastOrNull()
         val backdrops = detail.array<JsonObject>("backdrops") ?: JsonArray()
         val backdropURLs = mutableListOf<String>()
         for (backdrop in backdrops) {
-            val url = backdrop.get("backdrop_url") as String?
+            val url = backdrop["backdrop_url"] as String?
             if (url != null) {
                 val urlPrefix = url.replace("{profile}", "")
-                backdropURLs.add("${urlPrefix}s1440/${movieCode}")
+                backdropURLs.add("${urlPrefix}s1440/$movieCode")
             }
         }
         val offers = mutableMapOf<String, StreamingDetails>()
         val offerOptions = detail.array<JsonObject>("offers") ?: JsonArray()
         for (offer in offerOptions) {
-            val providerId = offer.get("provider_id") as Int
+            val providerId = offer["provider_id"] as Int
             val provider = providers[providerId] ?: ""
-            val urls = (offer.get("urls") as JsonObject? ?: JsonObject())
-            val url = urls.get("deeplink_android") as String? ?: urls.get("standard_web") as String
-            offers.put(provider, StreamingDetails(providerId, url))
+            val urls = (offer["urls"] as JsonObject? ?: JsonObject())
+            val url = urls.get(key = "deeplink_android") as String? ?: urls["standard_web"] as String
+            offers[provider] = StreamingDetails(providerId, url)
         }
-        return MovieDetails(id = detail.get("id") as Int,
-                title = detail.get("title") as String? ?: detail.get("original_title") as String? ?: "No Title",
-                description = detail.get("short_description") as String? ?: "No Description",
+        return MovieDetails(id = detail["id"] as Int,
+                title = detail["title"] as String? ?: detail["original_title"] as String? ?: "No Title",
+                description = detail["short_description"] as String? ?: "No Description",
                 backdrops = backdropURLs.toTypedArray(),
                 offers = offers)
     }
@@ -197,42 +200,8 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
     }
 
     private fun queryAsJson(query: String): JsonObject {
-        val result = URL(query).openStream().let {
+        return URL(query).openStream().let {
             Parser().parse(it) as JsonObject
         }
-        return result
     }
-
-    //Unused
-    private fun itemToTVShow(item: JsonObject, provider: JsonObject?): TVShow {
-        val code = (item["full_path"] as String).split("/").lastOrNull()
-        val origPoster = item["poster"] as String? ?: ""
-        val title = createTitle(item)
-        val posterPrefix = (origPoster).replace("{profile}", "")
-        val offers
-                = mutableMapOf<String, OfferDetails>()
-        val offersArray = item.array<JsonObject>("offers") ?: JsonArray<JsonObject>()
-        for(offer in offersArray) {
-            val quality = offer["presentation_type"] as String?
-            if (quality != null) {
-                val monetization = offer["monetization_type"] as String? ?: ""
-                val totalEpisodes = offer["element_count"] as Int? ?: 0
-                val newEpisodes = offer["new_element_count"] as Int? ?: 0
-                offers.put(quality, OfferDetails(monetization, totalEpisodes, newEpisodes))
-            }
-        }
-        return TVShow(
-                id = item["id"] as Int,
-                title = title,
-                path = item["full_path"] as String? ?: "/no/path",
-                poster = "${posterPrefix}s166/${code}",
-                releaseYear = item["original_release_year"] as Int? ?: 0,
-                providerId = provider?.get("provider_id") as Int? ?: 0,
-                provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: "",
-                offers = offers
-        )
-    }
-
-
-
 }

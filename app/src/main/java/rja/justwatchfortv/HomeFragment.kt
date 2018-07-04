@@ -18,7 +18,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import rja.justwatchfortv.data.BaseContent
+import rja.justwatchfortv.content.BaseContent
 import rja.justwatchfortv.search.SearchActivity
 import java.util.*
 import java.util.concurrent.ExecutionException

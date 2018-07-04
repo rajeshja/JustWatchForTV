@@ -4,7 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.support.v17.leanback.widget.*
 import android.support.v4.app.FragmentActivity
-import rja.justwatchfortv.data.Content
+import rja.justwatchfortv.content.Content
 import rja.justwatchfortv.movie.Movie
 import rja.justwatchfortv.movie.MovieDetailsActivity
 

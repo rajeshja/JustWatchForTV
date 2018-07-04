@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import rja.justwatchfortv.data.BaseContent
-import rja.justwatchfortv.data.Content
+import rja.justwatchfortv.content.BaseContent
+import rja.justwatchfortv.content.Content
 import rja.justwatchfortv.movie.Movie
 
 class ContentPresenter : Presenter() {

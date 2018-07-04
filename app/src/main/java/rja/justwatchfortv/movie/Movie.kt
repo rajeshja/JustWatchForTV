@@ -1,7 +1,6 @@
 package rja.justwatchfortv.movie
 
-import rja.justwatchfortv.data.BaseContent
-import java.io.Serializable
+import rja.justwatchfortv.content.BaseContent
 
 data class Movie (override val id: Int,
                   override val title: String,
@@ -14,5 +13,4 @@ data class Movie (override val id: Int,
                   val availableQuality: Array<String>,
                   var description: String? = null,
                   var backdrops: Array<String> = emptyArray()) :
-        BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider),
-        Serializable
+        BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider)

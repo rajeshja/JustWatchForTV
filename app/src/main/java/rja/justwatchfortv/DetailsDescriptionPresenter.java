@@ -16,8 +16,7 @@ package rja.justwatchfortv;
 
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 
-import rja.justwatchfortv.data.Content;
-import rja.justwatchfortv.data.Movie;
+import rja.justwatchfortv.content.Content;
 
 public class DetailsDescriptionPresenter extends AbstractDetailsDescriptionPresenter {
 

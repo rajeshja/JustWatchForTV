@@ -1,12 +1,12 @@
 package rja.justwatchfortv.movie
 
-import android.graphics.drawable.Drawable
+import rja.justwatchfortv.content.BaseContentDetails
+import rja.justwatchfortv.content.StreamingDetails
 
-data class MovieDetails(val id: Int,
-                        val title: String,
-                        val description: String,
-                        val backdrops: Array<String>,
-                        val offers: Map<String, StreamingDetails>)
+data class MovieDetails(override val id: Int,
+                        override val title: String,
+                        override val description: String,
+                        override val backdrops: Array<String>,
+                        override val offers: Map<String, StreamingDetails>) :
+        BaseContentDetails(id, title, description, backdrops, offers)
 
-data class StreamingDetails(val id: Int,
-                            val url: String)
