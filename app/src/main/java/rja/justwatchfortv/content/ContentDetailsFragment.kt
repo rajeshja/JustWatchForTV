@@ -19,8 +19,10 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import rja.justwatchfortv.JustWatchAdapter
 import rja.justwatchfortv.R
+import rja.justwatchfortv.content.movie.Movie
+import rja.justwatchfortv.content.tvshow.TVShow
 
-class ContentDetailsFragment: DetailsSupportFragment() {
+abstract class ContentDetailsFragment: DetailsSupportFragment() {
 
     private var selectedContent: BaseContent? = null
     private lateinit var selectedMovieDetails: BaseContentDetails
@@ -55,11 +57,15 @@ class ContentDetailsFragment: DetailsSupportFragment() {
     private fun setupDetailsOverviewRow() {
 
         doAsync {
-            val details = JustWatchAdapter().movieDetails(selectedContent?.id ?: 0)
+            val details = when {
+                selectedContent is Movie -> JustWatchAdapter().movieDetails(selectedContent?.id ?: 0)
+                selectedContent is TVShow -> JustWatchAdapter().tvShowDetails(selectedContent?.id ?: 0)
+                else -> BaseContentDetails(0, "No title", "No description", emptyArray(), emptyMap())
+            }
             uiThread {
                 selectedMovieDetails = details
                 val row = DetailsOverviewRow(details)
-                row.imageDrawable = resources.getDrawable(R.drawable.default_background, activity?.theme)
+                row.imageDrawable = resources.getDrawable(getBackgroundColor(), activity?.theme)
                 val width = convertDpToPixel(resources, DETAIL_THUMB_WIDTH)
                 val height = convertDpToPixel(resources, DETAIL_THUMB_HEIGHT)
                 Glide.with(activity)
@@ -89,7 +95,7 @@ class ContentDetailsFragment: DetailsSupportFragment() {
 
     private fun setupDetailsOverviewRowPresenter() {
         val detailsPresenter = FullWidthDetailsOverviewRowPresenter(ContentDetailsDescriptionPresenter())
-        detailsPresenter.backgroundColor = resources.getColor(R.color.movie_background, activity?.theme)
+        detailsPresenter.backgroundColor = resources.getColor(getBackgroundColor(), activity?.theme)
 
         val sharedElementHelper = FullWidthDetailsOverviewSharedElementHelper()
         sharedElementHelper.setSharedElementEnterTransition(activity, ContentDetailsActivity.SHARED_ELEMENT_NAME)
@@ -136,4 +142,6 @@ class ContentDetailsFragment: DetailsSupportFragment() {
         val density = resources.displayMetrics.density
         return Math.round(dp.toFloat() * density)
     }
+
+    abstract fun getBackgroundColor() : Int
 }

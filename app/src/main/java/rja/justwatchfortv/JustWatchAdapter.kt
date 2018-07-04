@@ -10,6 +10,7 @@ import rja.justwatchfortv.content.Content
 import rja.justwatchfortv.content.StreamingDetails
 import rja.justwatchfortv.content.movie.Movie
 import rja.justwatchfortv.content.movie.MovieDetails
+import rja.justwatchfortv.content.tvshow.TVShow
 import rja.justwatchfortv.content.tvshow.TVShowDetails
 import java.net.URL
 import java.net.URLEncoder
@@ -109,29 +110,47 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
         val origPoster = item["poster"] as String? ?: ""
         val title = createTitle(item)
         val posterPrefix = (origPoster).replace("{profile}", "")
-        if (item["object_type"] == "movie") {
-            return Movie(
-                    id = item["id"] as Int,
-                    title = title,
-                    path = item["full_path"] as String? ?: "/no/path",
-                    poster = "${posterPrefix}s166/$code",
-                    posterLarge = "${posterPrefix}s592/$code",
-                    releaseYear = item["original_release_year"] as Int? ?: 0,
-                    providerId = provider?.get("provider_id") as Int? ?: 0,
-                    provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: "",
-                    availableQuality = emptyArray()
-            )
-        } else {
-            return Content(
-                    id = item["id"] as Int,
-                    title = title,
-                    type = item["object_type"] as String? ?: "No Type",
-                    path = item["full_path"] as String? ?: "/no/path",
-                    poster = "${posterPrefix}s166/$code",
-                    posterLarge = "${posterPrefix}s592/$code",
-                    releaseYear = item["original_release_year"] as Int? ?: 0,
-                    providerId = provider?.get("provider_id") as Int? ?: 0,
-                    provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: ""
+        return when {
+            item["object_type"] == "movie" -> {
+                Movie(
+                        id = item["id"] as Int,
+                        title = title,
+                        path = item["full_path"] as String? ?: "/no/path",
+                        poster = "${posterPrefix}s166/$code",
+                        posterLarge = "${posterPrefix}s592/$code",
+                        releaseYear = item["original_release_year"] as Int? ?: 0,
+                        providerId = provider?.get("provider_id") as Int? ?: 0,
+                        provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: "",
+                        availableQuality = emptyArray()
+                )
+            }
+            ((item["object_type"] == "show") || (item["object_type"] == "show_season")) -> {
+                TVShow(
+                        id = when {
+                            item["object_type"] == "show_season" -> item["show_id"] as Int
+                            item["object_type"] == "show" -> item["id"] as Int
+                            else -> item["id"] as Int
+                        },
+                        title = title,
+                        path = item["full_path"] as String? ?: "/no/path",
+                        poster = "${posterPrefix}s166/$code",
+                        posterLarge = "${posterPrefix}s592/$code",
+                        releaseYear = item["original_release_year"] as Int? ?: 0,
+                        providerId = provider?.get("provider_id") as Int? ?: 0,
+                        provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: "",
+                        availableQuality = emptyArray()
+                )
+            }
+            else -> Content(
+                        id = item["id"] as Int,
+                        title = title,
+                        type = item["object_type"] as String? ?: "No Type",
+                        path = item["full_path"] as String? ?: "/no/path",
+                        poster = "${posterPrefix}s166/$code",
+                        posterLarge = "${posterPrefix}s592/$code",
+                        releaseYear = item["original_release_year"] as Int? ?: 0,
+                        providerId = provider?.get("provider_id") as Int? ?: 0,
+                        provider = providers[provider?.get("provider_id") as Int? ?: 0] ?: ""
             )
         }
     }
@@ -174,11 +193,25 @@ class JustWatchAdapter : AsyncTask<String, Void, List<BaseContent>>() {
             val url = urls.get(key = "deeplink_android") as String? ?: urls["standard_web"] as String
             offers[provider] = StreamingDetails(providerId, url)
         }
-        return MovieDetails(id = detail["id"] as Int,
-                title = detail["title"] as String? ?: detail["original_title"] as String? ?: "No Title",
-                description = detail["short_description"] as String? ?: "No Description",
-                backdrops = backdropURLs.toTypedArray(),
-                offers = offers)
+        if (detail["object_type"] == "movie") {
+            return MovieDetails(id = detail["id"] as Int,
+                    title = detail["title"] as String? ?: detail["original_title"] as String? ?: "No Title",
+                    description = detail["short_description"] as String? ?: "No Description",
+                    backdrops = backdropURLs.toTypedArray(),
+                    offers = offers)
+        } else if ((detail["object_type"] == "show") || (detail["object_type"] == "show_season")) {
+            return TVShowDetails(id = detail["id"] as Int,
+                    title = detail["title"] as String? ?: detail["original_title"] as String? ?: "No Title",
+                    description = detail["short_description"] as String? ?: "No Description",
+                    backdrops = backdropURLs.toTypedArray(),
+                    offers = offers)
+        } else {
+            return BaseContentDetails(id = detail["id"] as Int,
+                    title = detail["title"] as String? ?: detail["original_title"] as String? ?: "No Title",
+                    description = detail["short_description"] as String? ?: "No Description",
+                    backdrops = backdropURLs.toTypedArray(),
+                    offers = offers)
+        }
     }
 
     fun searchAhead(query: String): List<BaseContent> {

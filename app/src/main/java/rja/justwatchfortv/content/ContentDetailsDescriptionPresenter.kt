@@ -1,15 +1,14 @@
 package rja.justwatchfortv.content
 
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter
-import rja.justwatchfortv.content.movie.MovieDetails
 
 class ContentDetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
 
     override fun onBindDescription(viewHolder: AbstractDetailsDescriptionPresenter.ViewHolder, item: Any) {
-        val movie = item as MovieDetails
+        val content = item as BaseContentDetails
 
-        viewHolder.title.text = movie.title
+        viewHolder.title.text = content.title
         viewHolder.body.text = "..."
-        viewHolder.body.text = movie.description
+        viewHolder.body.text = content.description
     }
 }
