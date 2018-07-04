@@ -1,6 +1,5 @@
 package rja.justwatchfortv
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -8,9 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v17.leanback.app.BackgroundManager
 import android.support.v17.leanback.app.BrowseSupportFragment
-import android.support.v17.leanback.app.SearchSupportFragment
 import android.support.v17.leanback.widget.*
-import android.support.v4.app.ActivityOptionsCompat
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
@@ -22,10 +19,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import rja.justwatchfortv.data.BaseContent
-import rja.justwatchfortv.data.Content
-import rja.justwatchfortv.data.MovieList
-import rja.justwatchfortv.movie.Movie
-import rja.justwatchfortv.movie.MovieDetailsActivity
 import rja.justwatchfortv.search.SearchActivity
 import java.util.*
 import java.util.concurrent.ExecutionException
