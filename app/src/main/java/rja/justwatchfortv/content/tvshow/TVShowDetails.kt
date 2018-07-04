@@ -1,9 +1,9 @@
-package rja.justwatchfortv.tvshow
+package rja.justwatchfortv.content.tvshow
 
 import rja.justwatchfortv.content.BaseContentDetails
 import rja.justwatchfortv.content.StreamingDetails
 
-class TVShowDetails(override val id: Int,
+data class TVShowDetails(override val id: Int,
                     override val title: String,
                     override val description: String,
                     override val backdrops: Array<String>,

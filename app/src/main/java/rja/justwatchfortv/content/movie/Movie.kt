@@ -1,4 +1,4 @@
-package rja.justwatchfortv.movie
+package rja.justwatchfortv.content.movie
 
 import rja.justwatchfortv.content.BaseContent
 
@@ -10,7 +10,7 @@ data class Movie (override val id: Int,
                   override val releaseYear: Int,
                   override val providerId: Int,
                   override val provider: String,
-                  val availableQuality: Array<String>,
-                  var description: String? = null,
-                  var backdrops: Array<String> = emptyArray()) :
-        BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider)
+                  override val availableQuality: Array<String>,
+                  override var description: String? = null,
+                  override var backdrops: Array<String> = emptyArray()) :
+        BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider, availableQuality, description)

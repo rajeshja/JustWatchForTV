@@ -12,12 +12,15 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import rja.justwatchfortv.content.BaseContent
 import rja.justwatchfortv.content.Content
-import rja.justwatchfortv.movie.Movie
+import rja.justwatchfortv.content.movie.Movie
+import rja.justwatchfortv.content.tvshow.TVShow
 
 class ContentPresenter : Presenter() {
 
-    private val CARD_WIDTH = JustWatchAdapter.POSTER_WIDTH * 7 / 5
-    private val CARD_HEIGHT = JustWatchAdapter.POSTER_HEIGHT * 7 / 5
+    companion object {
+        private const val CARD_WIDTH = JustWatchAdapter.POSTER_WIDTH * 7 / 5
+        private const val CARD_HEIGHT = JustWatchAdapter.POSTER_HEIGHT * 7 / 5
+    }
 
     private var defaultCardImage: Drawable? = null
 
@@ -62,6 +65,8 @@ class ContentPresenter : Presenter() {
             card.contentText = content.type
         } else if (content is Movie) {
             card.contentText = "A movie"
+        } else if (content is TVShow) {
+            card.contentText = "A TV Show"
         } else {
             card.contentText = "Got something that is neither movie nor content"
         }

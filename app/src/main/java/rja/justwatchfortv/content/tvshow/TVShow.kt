@@ -1,7 +1,6 @@
-package rja.justwatchfortv.tvshow
+package rja.justwatchfortv.content.tvshow
 
 import rja.justwatchfortv.content.BaseContent
-import java.io.Serializable
 
 data class TVShow (override val id: Int,
                    override val title: String,
@@ -11,8 +10,7 @@ data class TVShow (override val id: Int,
                    override val releaseYear: Int,
                    override val providerId: Int,
                    override val provider: String,
-                   val availableQuality: Array<String>,
-                   var description: String? = null,
-                   var backdrops: Array<String> = emptyArray()) :
-        BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider),
-        Serializable
+                   override val availableQuality: Array<String>,
+                   override var description: String? = null,
+                   override var backdrops: Array<String> = emptyArray()) :
+        BaseContent(id, title, path, poster, posterLarge, releaseYear, providerId, provider, availableQuality, description)

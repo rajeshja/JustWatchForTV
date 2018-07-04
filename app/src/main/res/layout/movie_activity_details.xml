@@ -2,8 +2,8 @@
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/movie_details_fragment"
-    android:name="rja.justwatchfortv.movie.MovieDetailsFragment"
+    android:name="rja.justwatchfortv.content.ContentDetailsFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".movie.MovieDetailsActivity"
+    tools:context=".content.ContentDetailsActivity"
     tools:deviceIds="tv" />

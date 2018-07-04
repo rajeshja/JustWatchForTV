@@ -8,9 +8,9 @@ import rja.justwatchfortv.content.BaseContent
 import rja.justwatchfortv.content.BaseContentDetails
 import rja.justwatchfortv.content.Content
 import rja.justwatchfortv.content.StreamingDetails
-import rja.justwatchfortv.movie.Movie
-import rja.justwatchfortv.movie.MovieDetails
-import rja.justwatchfortv.tvshow.TVShowDetails
+import rja.justwatchfortv.content.movie.Movie
+import rja.justwatchfortv.content.movie.MovieDetails
+import rja.justwatchfortv.content.tvshow.TVShowDetails
 import java.net.URL
 import java.net.URLEncoder
 

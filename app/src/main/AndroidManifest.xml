@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".DetailsActivity" />
-        <activity android:name=".movie.MovieDetailsActivity" />
+        <activity android:name=".content.ContentDetailsActivity" />
         <activity android:name=".search.SearchActivity" />
         <activity android:name=".BrowseErrorActivity" />
     </application>

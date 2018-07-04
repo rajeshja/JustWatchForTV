@@ -1,4 +1,4 @@
-package rja.justwatchfortv.movie
+package rja.justwatchfortv.content
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -20,10 +20,10 @@ import org.jetbrains.anko.uiThread
 import rja.justwatchfortv.JustWatchAdapter
 import rja.justwatchfortv.R
 
-class MovieDetailsFragment: DetailsSupportFragment() {
+class ContentDetailsFragment: DetailsSupportFragment() {
 
-    private var selectedMovie: Movie? = null
-    private lateinit var selectedMovieDetails: MovieDetails
+    private var selectedContent: BaseContent? = null
+    private lateinit var selectedMovieDetails: BaseContentDetails
 
     private lateinit var detailsBackground: DetailsSupportFragmentBackgroundController
     private lateinit var presenterSelector: ClassPresenterSelector
@@ -39,16 +39,14 @@ class MovieDetailsFragment: DetailsSupportFragment() {
 
         detailsBackground = DetailsSupportFragmentBackgroundController(this)
 
-        selectedMovie = activity?.intent?.getSerializableExtra(MovieDetailsActivity.MOVIE) as Movie
-        if (selectedMovie != null) {
+        selectedContent = activity?.intent?.getSerializableExtra(ContentDetailsActivity.CONTENT) as BaseContent
+        if (selectedContent != null) {
             presenterSelector = ClassPresenterSelector()
             adapter = ArrayObjectAdapter(presenterSelector)
             setupDetailsOverviewRow()
             setupDetailsOverviewRowPresenter()
             setupRelatedMovieListRow()
             setAdapter(adapter)
-            //onItemViewClickedListener = ItemViewClickedListener()
-
         } else {
 
         }
@@ -57,7 +55,7 @@ class MovieDetailsFragment: DetailsSupportFragment() {
     private fun setupDetailsOverviewRow() {
 
         doAsync {
-            val details = JustWatchAdapter().movieDetails(selectedMovie?.id ?: 0)
+            val details = JustWatchAdapter().movieDetails(selectedContent?.id ?: 0)
             uiThread {
                 selectedMovieDetails = details
                 val row = DetailsOverviewRow(details)
@@ -65,7 +63,7 @@ class MovieDetailsFragment: DetailsSupportFragment() {
                 val width = convertDpToPixel(resources, DETAIL_THUMB_WIDTH)
                 val height = convertDpToPixel(resources, DETAIL_THUMB_HEIGHT)
                 Glide.with(activity)
-                        .load("${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${selectedMovie?.poster}")
+                        .load("${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${selectedContent?.poster}")
                         .centerCrop()
                         .error(R.drawable.default_background)
                         .into(object: SimpleTarget<GlideDrawable>(width, height) {
@@ -90,11 +88,11 @@ class MovieDetailsFragment: DetailsSupportFragment() {
     }
 
     private fun setupDetailsOverviewRowPresenter() {
-        val detailsPresenter = FullWidthDetailsOverviewRowPresenter(MovieDetailsDescriptionPresenter())
+        val detailsPresenter = FullWidthDetailsOverviewRowPresenter(ContentDetailsDescriptionPresenter())
         detailsPresenter.backgroundColor = resources.getColor(R.color.movie_background, activity?.theme)
 
         val sharedElementHelper = FullWidthDetailsOverviewSharedElementHelper()
-        sharedElementHelper.setSharedElementEnterTransition(activity, MovieDetailsActivity.SHARED_ELEMENT_NAME)
+        sharedElementHelper.setSharedElementEnterTransition(activity, ContentDetailsActivity.SHARED_ELEMENT_NAME)
         detailsPresenter.setListener(sharedElementHelper)
         detailsPresenter.isParticipatingEntranceTransition = true
 
@@ -115,30 +113,23 @@ class MovieDetailsFragment: DetailsSupportFragment() {
     }
 
     //This code should be common for both Movie and TV Shows
-    private fun initializeBackground(movie: MovieDetails) {
-        if (movie.backdrops.isNotEmpty()) {
+    private fun initializeBackground(content: BaseContentDetails) {
+        if (content.backdrops.isNotEmpty()) {
             detailsBackground.enableParallax()
-            Log.d("MovieDetailsFragment",
-                  "Background image URL is ${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${movie.backdrops[0]}")
+            Log.d("ContentDetailsFragment",
+                  "Background image URL is ${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${content.backdrops[0]}")
             Glide.with(context)
-                    .load("${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${movie.backdrops[0]}")
+                    .load("${JustWatchAdapter.JUSTWATCH_IMAGE_DOMAIN}${content.backdrops[0]}")
                     .asBitmap()
                     .error(R.drawable.default_background)
                     .into<SimpleTarget<Bitmap>>(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(bitmap: Bitmap, glideAnimation: GlideAnimation<in Bitmap>?) {
-                            Log.d("MovieDetailsFragment", "Setting the background bitmap")
+                            Log.d("ContentDetailsFragment", "Setting the background bitmap")
                             detailsBackground.coverBitmap = bitmap
                             adapter.notifyArrayItemRangeChanged(0, adapter.size())
                         }
                     })
         }
-    }
-
-    private inner class ItemViewClickedListener : OnItemViewClickedListener {
-        override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?, rowViewHolder: RowPresenter.ViewHolder?, row: Row?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
     }
 
     private fun convertDpToPixel(resources: Resources, dp: Int): Int {

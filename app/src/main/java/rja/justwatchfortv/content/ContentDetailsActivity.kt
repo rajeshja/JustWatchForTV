@@ -1,13 +1,13 @@
-package rja.justwatchfortv.movie
+package rja.justwatchfortv.content
 
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import rja.justwatchfortv.R
 
-class MovieDetailsActivity: FragmentActivity() {
+class ContentDetailsActivity: FragmentActivity() {
 
     companion object {
-        const val MOVIE = "Movie"
+        const val CONTENT = "Content"
         const val SHARED_ELEMENT_NAME = "hero"
     }
 

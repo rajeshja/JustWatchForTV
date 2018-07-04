@@ -1,12 +1,9 @@
-package rja.justwatchfortv.movie
+package rja.justwatchfortv.content
 
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter
-import android.util.Log
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import rja.justwatchfortv.JustWatchAdapter
+import rja.justwatchfortv.content.movie.MovieDetails
 
-class MovieDetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
+class ContentDetailsDescriptionPresenter : AbstractDetailsDescriptionPresenter() {
 
     override fun onBindDescription(viewHolder: AbstractDetailsDescriptionPresenter.ViewHolder, item: Any) {
         val movie = item as MovieDetails

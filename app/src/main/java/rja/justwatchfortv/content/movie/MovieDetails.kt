@@ -1,4 +1,4 @@
-package rja.justwatchfortv.movie
+package rja.justwatchfortv.content.movie
 
 import rja.justwatchfortv.content.BaseContentDetails
 import rja.justwatchfortv.content.StreamingDetails

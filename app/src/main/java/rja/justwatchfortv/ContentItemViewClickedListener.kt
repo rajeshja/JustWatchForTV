@@ -4,9 +4,9 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.support.v17.leanback.widget.*
 import android.support.v4.app.FragmentActivity
+import rja.justwatchfortv.content.BaseContent
 import rja.justwatchfortv.content.Content
-import rja.justwatchfortv.movie.Movie
-import rja.justwatchfortv.movie.MovieDetailsActivity
+import rja.justwatchfortv.content.ContentDetailsActivity
 
 class ContentItemViewClickedListener(val activity: FragmentActivity?) : OnItemViewClickedListener {
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder, item: Any?,
@@ -19,13 +19,13 @@ class ContentItemViewClickedListener(val activity: FragmentActivity?) : OnItemVi
                     (itemViewHolder.view as ImageCardView).mainImageView,
                     DetailsActivity.SHARED_ELEMENT_NAME).toBundle()
             activity?.startActivity(intent, bundle)
-        } else if (item is Movie) {
-            val intent = Intent(activity, MovieDetailsActivity::class.java)
-            intent.putExtra(MovieDetailsActivity.MOVIE, item)
+        } else if (item is BaseContent) {
+            val intent = Intent(activity, ContentDetailsActivity::class.java)
+            intent.putExtra(ContentDetailsActivity.CONTENT, item)
             val bundle = ActivityOptions.makeSceneTransitionAnimation(
                     activity,
                     (itemViewHolder.view as ImageCardView).mainImageView,
-                    MovieDetailsActivity.SHARED_ELEMENT_NAME).toBundle()
+                    ContentDetailsActivity.SHARED_ELEMENT_NAME).toBundle()
             activity?.startActivity(intent, bundle)
         }
     }
