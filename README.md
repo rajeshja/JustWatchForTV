@@ -11,9 +11,13 @@ The application was written in Android Studio.
 
 To deploy this to your TV (or Android TV Box), import it into Android Studio. Then open a command prompt and run the following
 command:
-    adb connect <IP Address of your TV>
+```
+adb connect [IP Address of your TV]
+```
 
 For example:
-    adb connect 192.168.1.140
+```
+adb connect 192.168.1.140
+```
   
 Your TV will now show up in ADB as a connected device. Then "Run" the app from Android Studio on your TV. 
