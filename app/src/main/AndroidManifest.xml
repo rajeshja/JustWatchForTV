@@ -34,7 +34,6 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailsActivity" />
         <activity android:name=".content.movie.MovieDetailsActivity" />
         <activity android:name=".content.tvshow.TVShowDetailsActivity" />
         <activity android:name=".search.SearchActivity" />

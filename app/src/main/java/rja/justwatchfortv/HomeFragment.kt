@@ -13,12 +13,13 @@ import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
 import rja.justwatchfortv.content.BaseContent
+import rja.justwatchfortv.content.ContentItemViewClickedListener
+import rja.justwatchfortv.content.ContentPresenter
 import rja.justwatchfortv.search.SearchActivity
 import java.util.*
 import java.util.concurrent.ExecutionException
@@ -138,7 +139,6 @@ class HomeFragment: BrowseSupportFragment() {
 
     private fun setupEventListeners() {
         setOnSearchClickedListener {
-            Toast.makeText(context, "Search not fully implemented yet", Toast.LENGTH_SHORT).show()
             val intent = Intent(activity, SearchActivity::class.java)
             startActivity(intent)
         }

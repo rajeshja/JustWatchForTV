@@ -9,8 +9,8 @@ import android.support.v17.leanback.widget.ObjectAdapter
 import android.util.Log
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import rja.justwatchfortv.ContentItemViewClickedListener
-import rja.justwatchfortv.ContentPresenter
+import rja.justwatchfortv.content.ContentItemViewClickedListener
+import rja.justwatchfortv.content.ContentPresenter
 import rja.justwatchfortv.JustWatchAdapter
 import rja.justwatchfortv.R
 
@@ -60,9 +60,9 @@ class SearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResu
                 uiThread {
                     rowsAdapter.clear()
                     if (result.isNotEmpty()) {
-                        val rowAdapter = ArrayObjectAdapter(ContentPresenter())
+                        val rowAdapter = ListRow(ArrayObjectAdapter(ContentPresenter()))
                         for (content in result) {
-                            rowAdapter.add(content)
+                            (rowAdapter.adapter as ArrayObjectAdapter).add(content)
                         }
                         rowsAdapter.add(rowAdapter)
                     }
